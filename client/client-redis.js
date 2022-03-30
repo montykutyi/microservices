@@ -102,7 +102,7 @@ class ClientRedis extends client_proxy_1.ClientProxy {
             const serializedPacket = this.serializer.serialize(packet);
             const responseChannel = this.getReplyPattern(pattern);
             let subscriptionsCount = this.subscriptionsCount.get(responseChannel) || 0;
-            this.logger.log('subscriptionsCount ' + responseChannel + ':' + subscriptionsCount);
+            this.logger.error('subscriptionsCount ' + responseChannel + ':' + subscriptionsCount);
             const publishPacket = () => {
                 subscriptionsCount = this.subscriptionsCount.get(responseChannel) || 0;
                 this.subscriptionsCount.set(responseChannel, subscriptionsCount + 1);
@@ -111,7 +111,8 @@ class ClientRedis extends client_proxy_1.ClientProxy {
             };
             if (subscriptionsCount <= 0) {
                 this.subClient.subscribe(responseChannel, (err) => {
-                    this.logger.error('Subscription error:', err);
+                    this.logger.error('Subscription error');
+                    this.logger.error(err);
                     !err && publishPacket();
                 });
             }
