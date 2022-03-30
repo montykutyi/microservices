@@ -111,8 +111,16 @@ class ClientRedis extends client_proxy_1.ClientProxy {
             };
             if (subscriptionsCount <= 0) {
                 this.subClient.subscribe(responseChannel, (err) => {
-                    this.logger.error('Subscription error');
-                    this.logger.error(err);
+                    if (err) {
+                        if (err === null || err === void 0 ? void 0 : err.message) {
+                            this.logger.error(`Subscription error message: ${err.message}`);
+                        }
+                        if (err === null || err === void 0 ? void 0 : err.stack) {
+                            this.logger.error(`Subscription error stack: ${err.stack}`);
+                        }
+                        this.logger.error('Subscription error', err);
+                        this.logger.error(err);
+                    }
                     !err && publishPacket();
                 });
             }
