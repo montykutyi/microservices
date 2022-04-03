@@ -102,9 +102,10 @@ class ClientRedis extends client_proxy_1.ClientProxy {
             const serializedPacket = this.serializer.serialize(packet);
             const responseChannel = this.getReplyPattern(pattern);
             let subscriptionsCount = this.subscriptionsCount.get(responseChannel) || 0;
-            this.logger.error('subscriptionsCount ' + responseChannel + ':' + subscriptionsCount);
+            this.logger.error('publish ' + responseChannel + ':' + subscriptionsCount);
             const publishPacket = () => {
                 subscriptionsCount = this.subscriptionsCount.get(responseChannel) || 0;
+                this.logger.error('publishPacket ' + responseChannel + ':' + subscriptionsCount);
                 this.subscriptionsCount.set(responseChannel, subscriptionsCount + 1);
                 this.routingMap.set(packet.id, callback);
                 this.pubClient.publish(this.getRequestPattern(pattern), JSON.stringify(serializedPacket));
@@ -143,6 +144,7 @@ class ClientRedis extends client_proxy_1.ClientProxy {
     }
     unsubscribeFromChannel(channel) {
         const subscriptionCount = this.subscriptionsCount.get(channel);
+        this.logger.error('unsubscribeFromChannel ' + channel + ':' + subscriptionCount);
         this.subscriptionsCount.set(channel, subscriptionCount - 1);
         if (subscriptionCount - 1 <= 0) {
             this.subClient.unsubscribe(channel);
